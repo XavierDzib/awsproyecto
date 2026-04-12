@@ -1,0 +1,73 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Alumno;
+use Illuminate\Support\Facades\Cache;
+
+class AlumnoService
+{
+    private const CACHE_KEY = 'alumnos';
+    private const NEXT_ID_KEY = 'next_alumno_id';
+
+    public function getAll(): array
+    {
+        $alumnos = Cache::get(self::CACHE_KEY, []);
+        return array_values($alumnos);
+    }
+
+    public function getById($id): ?Alumno
+    {
+        $alumnos = Cache::get(self::CACHE_KEY, []);
+        return $alumnos[$id] ?? null;
+    }
+
+    public function create(array $data): Alumno
+    {
+        $alumnos = Cache::get(self::CACHE_KEY, []);
+        $nextId = Cache::get(self::NEXT_ID_KEY, 1);
+
+        $alumno = Alumno::fromArray($nextId, $data);
+        $alumnos[$nextId] = $alumno;
+
+        Cache::put(self::CACHE_KEY, $alumnos);
+        Cache::put(self::NEXT_ID_KEY, $nextId + 1);
+
+        return $alumno;
+    }
+
+    public function update($id, array $data): ?Alumno
+    {
+        $alumnos = Cache::get(self::CACHE_KEY, []);
+
+        if (!isset($alumnos[$id])) {
+            return null;
+        }
+
+        $alumno = $alumnos[$id];
+
+        if (isset($data['nombres'])) $alumno->nombres = $data['nombres'];
+        if (isset($data['apellidos'])) $alumno->apellidos = $data['apellidos'];
+        if (isset($data['matricula'])) $alumno->matricula = $data['matricula'];
+        if (isset($data['promedio'])) $alumno->promedio = (float) $data['promedio'];
+
+        $alumnos[$id] = $alumno;
+        Cache::put(self::CACHE_KEY, $alumnos);
+
+        return $alumno;
+    }
+
+    public function delete($id): bool
+    {
+        $alumnos = Cache::get(self::CACHE_KEY, []);
+
+        if (!isset($alumnos[$id])) {
+            return false;
+        }
+
+        unset($alumnos[$id]);
+        Cache::put(self::CACHE_KEY, $alumnos);
+
+        return true;
+    }
+}
