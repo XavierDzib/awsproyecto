@@ -10,7 +10,6 @@ Route::get('/', function () {
 
 // Rutas API SIN protección CSRF
 Route::withoutMiddleware(['web', \App\Http\Middleware\VerifyCsrfToken::class])
-    ->prefix('api')
     ->group(function () {
         
         // Alumnos
