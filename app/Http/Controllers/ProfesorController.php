@@ -35,11 +35,11 @@ class ProfesorController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'id' => 'sometimes|integer|min:1',  // 🔥 CAMBIO 2: ID opcional
+            'id' => 'sometimes|integer|min:1',
             'numeroEmpleado' => 'required|string|max:50',
             'nombres' => 'required|string|max:255',
             'apellidos' => 'required|string|max:255',
-            'horasClase' => 'required|numeric|min:0|max:40',  // 🔥 CAMBIO 3: numeric en lugar de integer
+            'horasClase' => 'required|numeric|min:0|max:40',
         ]);
 
         if ($validator->fails()) {
@@ -57,7 +57,7 @@ class ProfesorController extends Controller
             'numeroEmpleado' => 'sometimes|string|max:50',
             'nombres' => 'sometimes|string|max:255',
             'apellidos' => 'sometimes|string|max:255',
-            'horasClase' => 'sometimes|numeric|min:0|max:40',  // 🔥 CAMBIO 4: numeric
+            'horasClase' => 'sometimes|numeric|min:0|max:40',
         ]);
 
         if ($validator->fails()) {
