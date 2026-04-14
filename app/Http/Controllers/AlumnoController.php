@@ -38,7 +38,7 @@ class AlumnoController extends Controller
             'nombres' => 'required|string|max:255',
             'apellidos' => 'required|string|max:255',
             'matricula' => 'required|string|max:50',
-            'promedio' => 'required|numeric|between:0,10',
+            'promedio' => 'required|numeric|between:0,100',
         ]);
 
         if ($validator->fails()) {
@@ -56,7 +56,7 @@ class AlumnoController extends Controller
             'nombres' => 'sometimes|string|max:255',
             'apellidos' => 'sometimes|string|max:255',
             'matricula' => 'sometimes|string|max:50',
-            'promedio' => 'sometimes|numeric|between:0,10',
+            'promedio' => 'sometimes|numeric|between:0,100',
         ]);
 
         if ($validator->fails()) {

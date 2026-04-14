@@ -38,7 +38,7 @@ class ProfesorController extends Controller
             'numeroEmpleado' => 'required|string|max:50',
             'nombres' => 'required|string|max:255',
             'apellidos' => 'required|string|max:255',
-            'horasClase' => 'required|integer|min:1|max:40',
+            'horasClase' => 'required|integer',
         ]);
 
         if ($validator->fails()) {
@@ -56,7 +56,7 @@ class ProfesorController extends Controller
             'numeroEmpleado' => 'sometimes|string|max:50',
             'nombres' => 'sometimes|string|max:255',
             'apellidos' => 'sometimes|string|max:255',
-            'horasClase' => 'sometimes|integer|min:1|max:40',
+            'horasClase' => 'sometimes|integer',
         ]);
 
         if ($validator->fails()) {
