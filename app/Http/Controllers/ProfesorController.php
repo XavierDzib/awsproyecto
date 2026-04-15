@@ -36,7 +36,7 @@ class ProfesorController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'id' => 'sometimes|integer|min:1',
-            'numeroEmpleado' => 'required|string|max:50',
+            'numeroEmpleado' => 'required|string|max:50|regex:/^[0-9]+$/',
             'nombres' => 'required|string|max:255',
             'apellidos' => 'required|string|max:255',
             'horasClase' => 'required|numeric|min:0|max:40',
@@ -54,7 +54,7 @@ class ProfesorController extends Controller
     public function update(Request $request, $id): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'numeroEmpleado' => 'sometimes|string|max:50',
+            'numeroEmpleado' => 'sometimes|string|max:50|regex:/^[0-9]+$/',
             'nombres' => 'sometimes|string|max:255',
             'apellidos' => 'sometimes|string|max:255',
             'horasClase' => 'sometimes|numeric|min:0|max:40',

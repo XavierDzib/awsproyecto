@@ -26,7 +26,6 @@ class ProfesorService
     {
         $profesores = Cache::get(self::CACHE_KEY, []);
         
-        // 🔥 CAMBIO 1: Verificar si viene un ID en los datos
         if (isset($data['id'])) {
             $id = $data['id'];
             
