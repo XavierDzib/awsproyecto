@@ -2,42 +2,25 @@
 
 namespace App\Models;
 
-class Profesor implements \JsonSerializable
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Profesor extends Model
 {
-    public $id;
-    public $numeroEmpleado;
-    public $nombres;
-    public $apellidos;
-    public $horasClase;
+    use HasFactory;
 
-    public function __construct($id, $numeroEmpleado, $nombres, $apellidos, $horasClase)
-    {
-        $this->id = $id;
-        $this->numeroEmpleado = $numeroEmpleado;
-        $this->nombres = $nombres;
-        $this->apellidos = $apellidos;
-        $this->horasClase = (int) $horasClase;
-    }
+    protected $table = 'profesores';
 
-    public function jsonSerialize(): array
-    {
-        return [
-            'id' => $this->id,
-            'numeroEmpleado' => $this->numeroEmpleado,
-            'nombres' => $this->nombres,
-            'apellidos' => $this->apellidos,
-            'horasClase' => $this->horasClase,
-        ];
-    }
+    protected $fillable = [
+        'numeroEmpleado',
+        'nombres',
+        'apellidos',
+        'horasClase'
+    ];
 
-    public static function fromArray($id, array $data): self
-    {
-        return new self(
-            $id,
-            $data['numeroEmpleado'],
-            $data['nombres'],
-            $data['apellidos'],
-            $data['horasClase']
-        );
-    }
+    // Forzamos el casteo de horasClase a int
+    protected $casts = [
+        'horasClase' => 'integer',
+        'numeroEmpleado' => 'integer',
+    ];
 }

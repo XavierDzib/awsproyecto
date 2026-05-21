@@ -18,6 +18,10 @@ Route::withoutMiddleware(['web', \App\Http\Middleware\VerifyCsrfToken::class])
         Route::post('/alumnos', [AlumnoController::class, 'store']);
         Route::put('/alumnos/{id}', [AlumnoController::class, 'update']);
         Route::delete('/alumnos/{id}', [AlumnoController::class, 'destroy']);
+        Route::post('/alumnos/{id}/fotoPerfil', [AlumnoController::class, 'uploadFotoPerfil']);
+        Route::post('/alumnos/{id}/session/login', [AlumnoController::class, 'login']);
+        Route::post('/alumnos/{id}/session/verify', [AlumnoController::class, 'verifySession']);
+        Route::post('/alumnos/{id}/session/logout', [AlumnoController::class, 'logout']);
         
         // Profesores
         Route::get('/profesores', [ProfesorController::class, 'index']);

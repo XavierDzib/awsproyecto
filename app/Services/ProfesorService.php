@@ -3,95 +3,68 @@
 namespace App\Services;
 
 use App\Models\Profesor;
-use Illuminate\Support\Facades\Cache;
 
 class ProfesorService
 {
-    private const CACHE_KEY = 'profesores';
-    private const NEXT_ID_KEY = 'next_profesor_id';
-
+    /**
+     * Obtener todos los profesores de la base de datos.
+     */
     public function getAll(): array
     {
-        $profesores = Cache::get(self::CACHE_KEY, []);
-        return array_values($profesores);
+        // Eloquent nos devuelve una colección; la convertimos a array.
+        return Profesor::all()->toArray();
     }
 
+    /**
+     * Obtener un profesor por su ID autónomo de la base de datos.
+     */
     public function getById($id): ?Profesor
     {
-        $profesores = Cache::get(self::CACHE_KEY, []);
-        return $profesores[$id] ?? null;
+        // find($id) busca por la llave primaria y regresa el modelo o null si no existe.
+        return Profesor::find($id);
     }
 
+    /**
+     * Crear un profesor delegando el ID a la base de datos.
+     */
     public function create(array $data): Profesor
     {
-        $profesores = Cache::get(self::CACHE_KEY, []);
-        
-        if (isset($data['id'])) {
-            $id = $data['id'];
-            
-            // Verificar si ya existe un profesor con ese ID
-            if (isset($profesores[$id])) {
-                // Si ya existe, actualizar
-                return $this->update($id, $data);
-            }
-            
-            // Crear con el ID proporcionado
-            $profesor = Profesor::fromArray($id, $data);
-            $profesores[$id] = $profesor;
-            Cache::put(self::CACHE_KEY, $profesores);
-            
-            // Actualizar el nextId si es necesario
-            $nextId = Cache::get(self::NEXT_ID_KEY, 1);
-            if ($id >= $nextId) {
-                Cache::put(self::NEXT_ID_KEY, $id + 1);
-            }
-            
-            return $profesor;
-        }
-        
-        // Si no viene ID, usar auto-increment
-        $nextId = Cache::get(self::NEXT_ID_KEY, 1);
-        $profesor = Profesor::fromArray($nextId, $data);
-        $profesores[$nextId] = $profesor;
-        
-        Cache::put(self::CACHE_KEY, $profesores);
-        Cache::put(self::NEXT_ID_KEY, $nextId + 1);
-        
-        return $profesor;
+        return Profesor::create([
+            'numeroEmpleado' => $data['numeroEmpleado'],
+            'nombres'        => $data['nombres'],
+            'apellidos'      => $data['apellidos'],
+            'horasClase'     => $data['horasClase'],
+        ]);
     }
 
+    /**
+     * Actualizar los datos de un profesor existente.
+     */
     public function update($id, array $data): ?Profesor
     {
-        $profesores = Cache::get(self::CACHE_KEY, []);
+        $profesor = Profesor::find($id);
 
-        if (!isset($profesores[$id])) {
+        if (!$profesor) {
             return null;
         }
 
-        $profesor = $profesores[$id];
-
-        if (isset($data['numeroEmpleado'])) $profesor->numeroEmpleado = $data['numeroEmpleado'];
-        if (isset($data['nombres'])) $profesor->nombres = $data['nombres'];
-        if (isset($data['apellidos'])) $profesor->apellidos = $data['apellidos'];
-        if (isset($data['horasClase'])) $profesor->horasClase = (int) $data['horasClase'];
-
-        $profesores[$id] = $profesor;
-        Cache::put(self::CACHE_KEY, $profesores);
+        // Actualizamos solo los campos que vengan en la petición gracias al 'sometimes' del validador.
+        $profesor->update($data);
 
         return $profesor;
     }
 
+    /**
+     * Eliminar un profesor por su ID.
+     */
     public function delete($id): bool
     {
-        $profesores = Cache::get(self::CACHE_KEY, []);
+        $profesor = Profesor::find($id);
 
-        if (!isset($profesores[$id])) {
+        if (!$profesor) {
             return false;
         }
 
-        unset($profesores[$id]);
-        Cache::put(self::CACHE_KEY, $profesores);
-
-        return true;
+        return (bool) $profesor->delete();
     }
 }

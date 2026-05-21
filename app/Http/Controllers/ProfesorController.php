@@ -35,7 +35,6 @@ class ProfesorController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'id' => 'sometimes|integer|min:1',
             'numeroEmpleado' => 'required|numeric|min:0',
             'nombres' => 'required|string|max:255',
             'apellidos' => 'required|string|max:255',
