@@ -85,6 +85,21 @@ class AlumnoController extends Controller
         return response()->json(['message' => 'Alumno eliminado correctamente'], 200);
     }
 
+    public function sendEmail(Request $request, $id): JsonResponse
+    {
+        // Invocamos el servicio (el cual internamente debe publicar en el topic de SNS)
+        $emailEnviado = $this->alumnoService->sendNotificationEmail($id);
+
+        if (!$emailEnviado) {
+            return response()->json(['error' => 'No se pudo enviar el correo o el alumno no existe'], 400);
+        }
+
+        // El test requiere rigurosamente un código 200 y formato JSON
+        return response()->json([
+            'message' => 'Email enviado correctamente'
+        ], 200);
+    }
+
     public function uploadFotoPerfil(Request $request, $id): JsonResponse
     {
         // Validación que venga un archivo y que sea una imagen válida
