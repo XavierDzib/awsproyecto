@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Alumno;
 use App\Services\AlumnoService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -87,14 +88,22 @@ class AlumnoController extends Controller
 
     public function sendEmail(Request $request, $id): JsonResponse
     {
-        // Invocamos el servicio (el cual internamente debe publicar en el topic de SNS)
-        $emailEnviado = $this->alumnoService->sendNotificationEmail($id);
-
-        if (!$emailEnviado) {
-            return response()->json(['error' => 'No se pudo enviar el correo o el alumno no existe'], 400);
+        try {
+            $alumno = Alumno::findOrFail($id);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'error' => 'Alumno no encontrado'
+            ], 404);
         }
 
-        // El test requiere rigurosamente un código 200 y formato JSON
+        $emailEnviado = $this->alumnoService->sendNotificationEmail($alumno);
+
+        if (!$emailEnviado) {
+            return response()->json([
+                'error' => 'No se pudo enviar el correo en AWS SNS'
+            ], 400);
+        }
+
         return response()->json([
             'message' => 'Email enviado correctamente'
         ], 200);

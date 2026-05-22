@@ -4,10 +4,12 @@ namespace App\Services;
 
 use App\Models\Alumno;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\Exception\DynamoDbException;
+use Aws\Sns\SnsClient;
 
 class AlumnoService
 {
