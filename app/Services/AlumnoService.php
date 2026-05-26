@@ -255,14 +255,14 @@ class AlumnoService
      */
     public function sendNotificationEmail($alumno)
     {
-        // 1. Instanciar el cliente de SNS con las credenciales del .env (compatibles con AWS Academy)
+        // 1. Instanciar el cliente de SNS con las credenciales del .env
         $snsClient = new SnsClient([
             'region'  => env('AWS_DEFAULT_REGION', 'us-east-1'),
             'version' => 'latest',
             'credentials' => [
                 'key'    => env('AWS_ACCESS_KEY_ID'),
                 'secret' => env('AWS_SECRET_ACCESS_KEY'),
-                'token'  => env('AWS_SESSION_TOKEN'), // Esencial para que no dé error en AWS Academy
+                'token'  => env('AWS_SESSION_TOKEN'),
             ],
         ]);
 
@@ -270,7 +270,12 @@ class AlumnoService
         $topicArn = env('AWS_SNS_TOPIC_ARN');
 
         // Construir el mensaje que se enviará al correo
-        $message = "Hola " . $alumno->nombre . ",\n\nTu cuenta ha sido procesada exitosamente en el sistema de la UADY utilizando AWS Cloud Foundations.";
+        $message = "Hola " . $alumno->nombres . " " . $alumno->apellidos . ",\n\n" .
+               "Tu cuenta ha sido procesada exitosamente en el sistema de la UADY utilizando AWS Cloud Foundations.\n" .
+               "Tus detalles registrados son:\n" .
+               "- Matrícula: " . $alumno->matricula . "\n" .
+               "- Promedio: " . $alumno->promedio . "\n\n" .
+               "¡Mucho éxito!";
         $subject = "Notificación de Alumno - AWS Cloud Foundations";
 
         try {
@@ -281,16 +286,15 @@ class AlumnoService
                 'Subject'  => $subject,
             ]);
 
-            // Opcional: Registrar en el log que se envió con éxito
+            // Registro en el log de que se envió con éxito
             Log::info("Notificación enviada por SNS al alumno ID: {$alumno->id}. MessageId: " . $result['MessageId']);
             
             return true;
-
+            
         } catch (AwsException $e) {
             // Si el token caducó o el ARN está mal, Laravel escribirá el porqué en storage/logs/laravel.log
             Log::error("Error al enviar notificación por SNS: " . $e->getMessage());
             
-            // Lanzamos un error interno para que el script de pruebas capte que algo falló en AWS
             abort(500, "Error al interactuar con AWS SNS: " . $e->getAwsErrorMessage());
         }
     }
